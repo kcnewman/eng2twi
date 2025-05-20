@@ -16,7 +16,7 @@ list_of_files = [
     "./src/translation.py",
     "./src/evaluation.py",
     "./src/visualization.py",
-    "./models/",
+    "./models/.gitkeep",
     "./tests/__init__.py",
     "./results/.gitkeep",
     "./requirements.txt",
