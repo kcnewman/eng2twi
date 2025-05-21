@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import re
+import pickle
 import unicodedata
 
 
@@ -52,3 +53,12 @@ def clean_text(text: str, lang: str = "ak"):
         text = re.sub(r"\s+", " ", text).strip()
         text = re.sub(r"[^\w\s]", "", text)
         return text
+
+def save_model(model, path):
+    with open(path, "wb") as f:
+        pickle.dump(model, f)
+
+
+def load_model(path):
+    with open(path, "rb") as f:
+        return pickle.load(f)

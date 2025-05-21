@@ -55,3 +55,26 @@ def build_matrices(dictionary, en_embeddings, twi_embeddings):
     X = normalize(np.vstack(X), axis=1)
     Y = normalize(np.vstack(Y), axis=1)
     return X, Y
+
+
+def compute_loss(X, Y, R):
+    m = X.shape[0]
+    d = X @ R - Y
+    dsqr = np.square(d)
+    sum_dsqr = np.sum(dsqr)
+    loss = sum_dsqr / m
+    return loss
+
+
+def align_embeddings(
+    X, Y, steps=100, lr=0.003, verbose=True, compute_loss=compute_loss
+):
+    np.random.seed(42)
+    R = np.random.rand(X.shape[1], X.shape[1])
+    m = X.shape[0]
+    for i in range(steps):
+        if verbose and i % 25 == 0:
+            print(f"loss at iteration {i} is: {compute_loss(X, Y, R):.4f}")
+        gradient = (2 / m) * (X.T @ (X @ R - Y))
+        R -= lr * gradient
+        return R
