@@ -4,17 +4,19 @@ import re
 import unicodedata
 
 
-def load_dict(file_path: str, drop_pos: bool = True):
-    """Loads english to twi dictionary
+def load_dictionary(pos: bool = True):
+    """Loads English to Twi dictionary from disk
 
     Args:
-        file_path (str): Path to dictionary file
-        drop_pos: Drop part of speech column
+        pos (bool, optional): Drop part of speech column in dataset. Defaults to True.
 
     Returns:
-        df: pd.DataFrame
+        pd.DataFrame
     """
-    df = pd.read_csv(file_path)
-    if bool:
-        df = df.drop(columns=["pos"])
+    file_dir = "../data/raw/twi_dict.csv"
+    df = pd.read_csv(file_dir)
+    if pos:
+        df = df.drop("pos", axis=1)
+    else:
+        pass
     return df

@@ -173,3 +173,5 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 data/embeddings/glove.6B.300d.txt
+data/embeddings/glove.6B.100d.txt
+data/embeddings/twi_fasttext_4M_akan_dim_100.vec
