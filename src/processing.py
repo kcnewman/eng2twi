@@ -4,23 +4,17 @@ import re
 import unicodedata
 
 
-def entoak(file_path: str):
+def load_dict(file_path: str, drop_pos: bool = True):
     """Loads english to twi dictionary
 
     Args:
         file_path (str): Path to dictionary file
+        drop_pos: Drop part of speech column
 
     Returns:
         df: pd.DataFrame
     """
     df = pd.read_csv(file_path)
-    df = df.drop(columns=["pos"])
+    if bool:
+        df = df.drop(columns=["pos"])
     return df
-
-
-fp = "../data/raw/twi_dict.csv"
-df = entoak(file_path=fp)
-
-print(df.head())
-
-entoak()
