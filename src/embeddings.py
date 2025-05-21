@@ -42,6 +42,7 @@ def phrase_embeddings(phrase, embeddings):
 
 
 def build_matrices(dictionary, en_embeddings, twi_embeddings):
+    dictionary = dict(dictionary)
     X = []
     Y = []
 
@@ -67,14 +68,33 @@ def compute_loss(X, Y, R):
 
 
 def align_embeddings(
-    X, Y, steps=100, lr=0.003, verbose=True, compute_loss=compute_loss
+    X, Y, steps=100, lr=0.003, verbose=True, compute_loss=compute_loss, tol=1e-4, pat=20
 ):
     np.random.seed(42)
     R = np.random.rand(X.shape[1], X.shape[1])
     m = X.shape[0]
+    best_loss = float("inf")
+    wait = 0
+    loss_history = []
+    iter_history = []
     for i in range(steps):
-        if verbose and i % 25 == 0:
-            print(f"loss at iteration {i} is: {compute_loss(X, Y, R):.4f}")
+        loss = compute_loss(X, Y, R)
+        if verbose and i % 100 == 0:
+            print(f"loss at iteration {i} is: {loss:.4f}")
+            loss_history.append(loss)
+            iter_history.append(i)
+        if loss + tol < best_loss:
+            best_loss = loss
+            wait = 0
+        else:
+            wait += 1
+        if wait >= pat:
+            if verbose:
+                print(
+                    f"Early stopping at iteration {i}, loss did not improve for {pat} steps."
+                )
+                print(f"Loss at early stopping: {loss:.4f}")
+            break
         gradient = (2 / m) * (X.T @ (X @ R - Y))
         R -= lr * gradient
-        return R
+    return R, loss_history, iter_history

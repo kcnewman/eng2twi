@@ -2,7 +2,9 @@ import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 
 
-def plot_embeddings(embeddings, labels, title="Embedding Space", save_path=None):
+def plot_embeddings(
+    embeddings, labels, title="Embedding Space", save_path="../results/figures"
+):
     pca = PCA(n_components=2)
     reduced = pca.fit_transform(embeddings)
 
