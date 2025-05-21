@@ -1,38 +1,57 @@
 import tqdm
 import numpy as np
+import os
+import pickle
 from sklearn.preprocessing import normalize
 
 
-def load_embeddings(file_path: str, fasttext: bool = False):
-    """Load Fasttext.vec or Glove.txt word embeddings
+def load_embeddings(file_path: str, fasttext: bool = False, from_pickle: bool = False):
+    """
+    Load word embeddings from a .vec/.txt file or a .pkl file.
 
     Args:
-        file_path (str): Path to embedding file
-        fasttext (bool, optional): Placeholder for fasttext file type. Defaults to False.
+        file_path (str): Path to the embedding file.
+        fasttext (bool, optional): If True, parse as FastText format. Defaults to False.
+        from_pickle (bool, optional): If True, load from pickle file. Defaults to False.
 
     Returns:
-        Dict: Word embeddings
+        dict: Dictionary of word embeddings.
     """
+    if from_pickle:
+        with open(file_path, "rb") as f:
+            embeddings = pickle.load(f)
+        print(f"Loaded embeddings from pickle: {file_path}")
+        return embeddings
+
     embeddings = {}
-    if fasttext:
-        with open(file_path, "r", encoding="utf-8") as f:
+    with open(file_path, "r", encoding="utf-8") as f:
+        if fasttext:
             header = f.readline().strip().split()
             vocab, dim = int(header[0]), int(header[1])
-
-            for i in tqdm.tqdm(range(vocab)):
+            for _ in tqdm.tqdm(range(vocab)):
                 line = f.readline().strip().split()
                 word = line[0]
                 vector = np.array(line[1:], dtype="float32")
                 embeddings[word] = vector
-    else:
-        with open(file_path, "r", encoding="utf-8") as f:
-            for i, line in enumerate(tqdm.tqdm(f)):
+        else:
+            for line in tqdm.tqdm(f):
                 values = line.strip().split()
                 word = values[0]
                 vector = np.array(values[1:], dtype="float32")
                 embeddings[word] = vector
-    print(f"Loaded embeddings from {file_path}...")
+
+    print(f"Loaded embeddings from text: {file_path}")
     return embeddings
+
+
+def save_embedding(en_embeddings, tw_embeddings, directory="../models"):
+    with open(os.path.join(directory, "english_vecs.pkl"), "wb") as f:
+        pickle.dump(en_embeddings, f)
+    print(f"Saved English embeddings to {directory}/english_vecs.pkl")
+
+    with open(os.path.join(directory, "twi_vecs.pkl"), "wb") as f:
+        pickle.dump(tw_embeddings, f)
+    print(f"Saved Twi embeddings to {directory}/twi_vecs.pkl")
 
 
 def phrase_embeddings(phrase, embeddings):
