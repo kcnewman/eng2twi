@@ -1,6 +1,6 @@
-import os
 import tqdm
 import numpy as np
+from sklearn.preprocessing import normalize
 
 
 def load_embeddings(file_path: str, fasttext: bool = False):
@@ -33,3 +33,25 @@ def load_embeddings(file_path: str, fasttext: bool = False):
                 embeddings[word] = vector
     print(f"Loaded embeddings from {file_path}...")
     return embeddings
+
+
+def phrase_embeddings(phrase, embeddings):
+    words = phrase.split()
+    vecs = [embeddings[w] for w in words if w in embeddings]
+    return np.mean(vecs, axis=0) if vecs else None
+
+
+def build_matrices(dictionary, en_embeddings, twi_embeddings):
+    X = []
+    Y = []
+
+    for en_word, twi_phrase in dictionary.items():
+        if en_word not in en_embeddings:
+            continue
+        twi_vec = phrase_embeddings(twi_phrase, twi_embeddings)
+        if twi_vec is not None:
+            X.append(en_embeddings[en_word])
+            Y.append(twi_vec)
+    X = normalize(np.vstack(X), axis=1)
+    Y = normalize(np.vstack(Y), axis=1)
+    return X, Y
